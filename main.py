@@ -80,21 +80,14 @@ class MainWin(QWidget):
     def list_clear(self):
 
         msg = QMessageBox() 
-        msg.setIcon(QMessageBox.Warning) 
-    
+        msg.setIcon(QMessageBox.Warning)
         # setting message for Message Box 
-        msg.setText("Warning") 
-        
-
-        msg.setWindowTitle("Warning MessageBox") 
-        
-
-        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel) 
-        
+        msg.setText("Внимание!!!\nВы точно хотите удалить все заметки?")
+        msg.setWindowTitle("Warning")
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         # start the app 
-        retval = msg.exec_() 
-        print(retval)
-        if confirmation:
+        msg.exec_()
+        if msg.clickedButton().text() == 'OK':
             self.list_widget.clear()
             session = []
             with open(path_json_records, "w") as file:
@@ -121,13 +114,16 @@ class MainWin(QWidget):
             self.save_records(path_json_records, records)
 
     def rem_record(self):
-        remove_item = self.list_widget.currentItem()
-        confirmation = ("Вы точно хотите удалить запись?")
-        if confirmation:
-            self.list_widget.takeItem(self.list_widget.row(remove_item))
-            records = self.load_records(path_json_records)
-            records.remove(remove_item.text())
-            self.save_records(path_json_records, records)
+        try:
+            remove_item = self.list_widget.currentItem()
+            confirmation = ("Вы точно хотите удалить запись?")
+            if confirmation:
+                self.list_widget.takeItem(self.list_widget.row(remove_item))
+                records = self.load_records(path_json_records)
+                records.remove(remove_item.text())
+                self.save_records(path_json_records, records)
+        except:
+            pass
 
     def set_appear(self):
         self.setWindowTitle(title)
