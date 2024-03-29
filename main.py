@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget,
     QHBoxLayout, QVBoxLayout, QGridLayout,
     QGroupBox, QRadioButton,
-    QPushButton, QLabel, QListWidget, QLineEdit, QColorDialog)
+    QPushButton, QLabel, QListWidget, QLineEdit, QColorDialog, QMessageBox)
 from instr import *
 
 
@@ -78,7 +78,28 @@ class MainWin(QWidget):
             pass
 
     def list_clear(self):
-        self.list_widget.clear()
+
+        msg = QMessageBox() 
+        msg.setIcon(QMessageBox.Warning) 
+    
+        # setting message for Message Box 
+        msg.setText("Warning") 
+        
+
+        msg.setWindowTitle("Warning MessageBox") 
+        
+
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel) 
+        
+        # start the app 
+        retval = msg.exec_() 
+        print(retval)
+        if confirmation:
+            self.list_widget.clear()
+            session = []
+            with open(path_json_records, "w") as file:
+                json.dump(session, file)
+
 
     def search_record(self):
         search_text = self.line_search.text()
@@ -101,7 +122,8 @@ class MainWin(QWidget):
 
     def rem_record(self):
         remove_item = self.list_widget.currentItem()
-        if remove_item:
+        confirmation = ("Вы точно хотите удалить запись?")
+        if confirmation:
             self.list_widget.takeItem(self.list_widget.row(remove_item))
             records = self.load_records(path_json_records)
             records.remove(remove_item.text())
