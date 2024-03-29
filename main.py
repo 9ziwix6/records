@@ -9,6 +9,10 @@ from PyQt5.QtWidgets import (
     QPushButton, QLabel, QListWidget, QLineEdit, QColorDialog)
 from instr import *
 
+
+path_json_records = "record.json"
+
+
 class MainWin(QWidget):
     def __init__(self):
         super().__init__()
@@ -19,7 +23,9 @@ class MainWin(QWidget):
 
         self.show()
 
-        # self.first_power()
+        self.first_power()
+
+        self.setAllrecords()
 
     def initUI(self):
         self.layout_line = QVBoxLayout()
@@ -57,10 +63,19 @@ class MainWin(QWidget):
 
         self.setLayout(self.layout_line)
 
+    def setAllrecords(self):
+        records = self.load_records(path_json_records)
+        for record in records:
+            self.list_widget.addItem(record)
+
+
     def choose_color(self):
-        color = QColorDialog.getColor()
-        if color.isValid():
-            self.list_widget.currentItem().setBackground(QColor(color))
+        try:
+            color = QColorDialog.getColor()
+            if color.isValid():
+                self.list_widget.currentItem().setBackground(QColor(color))
+        except:
+            pass
 
     def list_clear(self):
         self.list_widget.clear()
@@ -80,17 +95,17 @@ class MainWin(QWidget):
             self.list_widget.addItem(record_with_date)
             self.line_name.clear()
 
-            records = self.load_records("record.json")
+            records = self.load_records(path_json_records)
             records.append(record_with_date)
-            self.save_records("record.json", records)
+            self.save_records(path_json_records, records)
 
     def rem_record(self):
         remove_item = self.list_widget.currentItem()
         if remove_item:
             self.list_widget.takeItem(self.list_widget.row(remove_item))
-            records = self.load_records("record.json")
+            records = self.load_records(path_json_records)
             records.remove(remove_item.text())
-            self.save_records("record.json", records)
+            self.save_records(path_json_records, records)
 
     def set_appear(self):
         self.setWindowTitle(title)
@@ -100,20 +115,22 @@ class MainWin(QWidget):
 
 
     def first_power(self):
-        if os.path.isfile("record.json"):
+        if os.path.isfile(path_json_records):
             print("файл есть")
         else:
             session = []
-            with open("record.json", "w") as file:
+            with open(path_json_records, "w") as file:
                 json.dump(session, file)
 
+
+
     def load_records(self, filename):
-        with open(filename, "r", encoding="utf-8") as file:
+        with open(filename, "r") as file:
             records = json.load(file)
-            return records
+        return records
 
     def save_records(self, filename, records):
-        with open("record.json", "w") as file:
+        with open(path_json_records, "w") as file:
             json.dump(records, file)
 
 records = [
